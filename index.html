@@ -1,1 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Random Picture Slideshow</title>
 
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .slideshow-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background: black;
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: black;
+      opacity: 0;
+      transform: scale(1);
+      transition: opacity 1.5s ease, transform 1.5s ease, filter 1.5s ease;
+    }
+
+    .slide.active {
+      opacity: 1;
+      z-index: 2;
+    }
+
+    .slide.previous {
+      z-index: 1;
+    }
+
+    /* Fade */
+    .transition-fade.active {
+      opacity: 1;
+    }
+
+    /* Zoom In */
+    .transition-zoom-in {
+      transform: scale(1.15);
+    }
+
+    .transition-zoom-in.active {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    /* Zoom Out */
+    .transition-zoom-out {
+      transform: scale(0.9);
+    }
+
+    .transition-zoom-out.active {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    /* Slide Left */
+    .transition-slide-left {
+      transform: translateX(100%);
+    }
+
+    .transition-slide-left.active {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    /* Slide Right */
+    .transition-slide-right {
+      transform: translateX(-100%);
+    }
+
+    .transition-slide-right.active {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    /* Slide Up */
+    .transition-slide-up {
+      transform: translateY(100%);
+    }
+
+    .transition-slide-up.active {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Slide Down */
+    .transition-slide-down {
+      transform: translateY(-100%);
+    }
+
+    .transition-slide-down.active {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Soft Blur */
+    .transition-blur {
+      filter: blur(12px);
+      transform: scale(1.05);
+    }
+
+    .transition-blur.active {
+      filter: blur(0);
+      transform: scale(1);
+      opacity: 1;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="slideshow-container">
+    <img id="slideA" class="slide active" src="" alt="Slideshow image">
+    <img id="slideB" class="slide" src="" alt="Slideshow image">
+  </div>
+
+  <script>
+    // Add your exported PowerPoint images here.
+    // Make sure the filenames match exactly.
+    const slides = [
+      "slides/slide1.jpg",
+      "slides/slide2.jpg",
+      "slides/slide3.jpg",
+      "slides/slide4.jpg",
+      "slides/slide5.jpg",
+      "slides/slide6.jpg"
+    ];
+
+    // Transition styles that will randomly rotate
+    const transitions = [
+      "transition-fade",
+      "transition-zoom-in",
+      "transition-zoom-out",
+      "transition-slide-left",
+      "transition-slide-right",
+      "transition-slide-up",
+      "transition-slide-down",
+      "transition-blur"
+    ];
+
+    const slideTime = 7000; // 7 seconds per slide
+    let currentIndex = 0;
+    let showingA = true;
+    let shuffledSlides = shuffleArray([...slides]);
+
+    const slideA = document.getElementById("slideA");
+    const slideB = document.getElementById("slideB");
+
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const randomIndex = Math.floor(Math.random() * (i + 1));
+        [array[i], array[randomIndex]] = [array[randomIndex], array[i]];
+      }
+      return array;
+    }
+
+    function getRandomTransition() {
+      return transitions[Math.floor(Math.random() * transitions.length)];
+    }
+
+    function clearTransitionClasses(element) {
+      transitions.forEach(t => element.classList.remove(t));
+    }
+
+    function showNextSlide() {
+      currentIndex++;
+
+      // When all slides have been shown, reshuffle them
+      if (currentIndex >= shuffledSlides.length) {
+        shuffledSlides = shuffleArray([...slides]);
+        currentIndex = 0;
+      }
+
+      const currentSlide = showingA ? slideA : slideB;
+      const nextSlide = showingA ? slideB : slideA;
+
+      clearTransitionClasses(currentSlide);
+      clearTransitionClasses(nextSlide);
+
+      const transition = getRandomTransition();
+
+      nextSlide.src = shuffledSlides[currentIndex];
+      nextSlide.className = "slide " + transition;
+
+      // Force browser to recognize the starting transition state
+      void nextSlide.offsetWidth;
+
+      currentSlide.classList.remove("active");
+      currentSlide.classList.add("previous");
+
+      nextSlide.classList.add("active");
+      nextSlide.classList.remove("previous");
+
+      showingA = !showingA;
+    }
+
+    // Load the first random slide
+    slideA.src = shuffledSlides[currentIndex];
+
+    // Start slideshow
+    setInterval(showNextSlide, slideTime);
+  </script>
+
+</body>
+</html>
