@@ -11,7 +11,7 @@
       └── slide116.jpg
 */
 
-const totalSlides = 116;
+const totalSlides = 118;
 const fileExtension = "jpg";
 const slideTime = 9000;
 const slides = [];
